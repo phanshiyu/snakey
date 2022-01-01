@@ -1,5 +1,7 @@
 import { CONTROL_DIRECTION_MAP, GRID_SIZE, WORLD_LENGTH } from "./constants";
-import { gameState } from "./gameState";
+import { initGameState } from "./gameState";
+
+let gameState = initGameState();
 
 function createSnakePart(i: number) {
   const snakePart = document.createElement("div");
@@ -36,7 +38,7 @@ function createFruit() {
   return fruit;
 }
 
-(() => {
+const start = () => {
   // reset
   const gameWorld = document.getElementById("game-world");
   gameWorld.style.height = `${WORLD_LENGTH * GRID_SIZE}px`;
@@ -44,10 +46,8 @@ function createFruit() {
   gameWorld.innerHTML = "";
   gameState.reset();
 
-  const scoreElement = document.createElement("h2");
-  document.body.append(scoreElement);
   gameState.subscribe((state) => {
-    scoreElement.innerText = state.score + "";
+    document.getElementById("score").innerText = state.score + "";
   });
 
   let renderedSnakePartsCount = 0;
@@ -64,16 +64,30 @@ function createFruit() {
 
   gameWorld.append(createFruit());
 
-  const endGame = gameLoop(100);
-
   gameState.subscribe(({ isGameOver }) => {
     if (isGameOver) {
-      endGame();
-      const gameOverText = document.createElement("h1");
-      gameOverText.innerText = "GAME OVER";
-      gameWorld.append(gameOverText);
+      if (!document.getElementById("game-over")) {
+        const gameOverText = document.createElement("h1");
+        gameOverText.id = "game-over";
+        gameOverText.innerText = "GAME OVER";
+        gameWorld.append(gameOverText);
+      }
     }
   });
+
+  return gameLoop(100);
+};
+
+(() => {
+  let end = start();
+
+  document.getElementById("restart").onclick = () => {
+    if (end) {
+      end();
+    }
+    gameState = initGameState();
+    end = start();
+  };
 })();
 
 function gameLoop(intervalInMs: number) {

@@ -1,7 +1,7 @@
 import { Direction } from "./constants";
 
 function makeGameState<T extends Record<string, unknown>>(initGameState: T) {
-  const subscribers = new Set<(state: T) => any>();
+  let subscribers = new Set<(state: T) => any>();
   let gameState = { ...initGameState };
 
   function get() {
@@ -61,19 +61,20 @@ function initSnake(length: 10): Coordinate[] {
   return snake;
 }
 
-export const gameState = makeGameState<{
-  isGameOver: boolean;
-  score: number;
-  fruit?: Coordinate | null;
-  snake: Coordinate[];
-  snakeDirection: Direction;
-}>({
-  isGameOver: false,
-  score: 0,
-  fruit: null,
-  snake: initSnake(10),
-  snakeDirection: {
-    x: 0,
-    y: 0,
-  },
-});
+export const initGameState = () =>
+  makeGameState<{
+    isGameOver: boolean;
+    score: number;
+    fruit?: Coordinate | null;
+    snake: Coordinate[];
+    snakeDirection: Direction;
+  }>({
+    isGameOver: false,
+    score: 0,
+    fruit: null,
+    snake: initSnake(10),
+    snakeDirection: {
+      x: 0,
+      y: 0,
+    },
+  });
