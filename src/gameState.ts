@@ -1,10 +1,6 @@
-import { CONTROL_DIRECTION_MAP, Direction, WORLD_LENGTH } from "./constants";
+import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "./constants";
 import { makeGameState } from "./makeGameState";
-
-export interface Position {
-  x: number;
-  y: number;
-}
+import { Position, State } from "./types";
 
 function initSnake(length = 10): Position[] {
   const snake: Position[] = [];
@@ -18,14 +14,6 @@ function initSnake(length = 10): Position[] {
   return snake;
 }
 
-interface State {
-  isGameOver: boolean;
-  score: number;
-  fruit?: Position | null;
-  snake: Position[];
-  snakeDirection: Direction;
-}
-
 const defaultGameState: Readonly<State> = {
   isGameOver: false,
   score: 0,
@@ -37,10 +25,8 @@ const defaultGameState: Readonly<State> = {
 export const initGameState = (snakeGameState = defaultGameState) =>
   makeGameState<Readonly<State>>(snakeGameState);
 
-export type SnakeGameState = ReturnType<typeof initGameState>;
-
 export function startGameLoop(gameState: SnakeGameState, fps: number) {
-  let isStop = false;
+  let isEndGameLoop = false;
   function loop() {
     setTimeout(() => {
       gameState.update((state) => {
@@ -54,7 +40,7 @@ export function startGameLoop(gameState: SnakeGameState, fps: number) {
             currSnakeHeadPos.x === state.snake[i].x &&
             currSnakeHeadPos.y === state.snake[i].y
           ) {
-            isStop = true;
+            isEndGameLoop = true;
             return {
               isGameOver: true,
             };
@@ -93,6 +79,7 @@ export function startGameLoop(gameState: SnakeGameState, fps: number) {
         } else {
           newSnakeBoday.pop();
         }
+
         return {
           snake: [newSnakeHead, ...newSnakeBoday],
           fruit: fruit ?? {
@@ -103,13 +90,15 @@ export function startGameLoop(gameState: SnakeGameState, fps: number) {
         };
       });
 
-      if (!isStop) requestAnimationFrame(loop);
+      if (!isEndGameLoop) requestAnimationFrame(loop);
     }, 1000 / fps);
   }
 
   requestAnimationFrame(loop);
 
   return () => {
-    isStop = true;
+    isEndGameLoop = true;
   };
 }
+
+export type SnakeGameState = ReturnType<typeof initGameState>;

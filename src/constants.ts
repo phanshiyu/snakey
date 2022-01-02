@@ -1,7 +1,4 @@
-export interface Direction {
-  x: -1 | 0 | 1;
-  y: -1 | 0 | 1;
-}
+import { Direction } from "./types";
 
 export const GRID_SIZE = 20;
 export const WORLD_LENGTH = 15;
