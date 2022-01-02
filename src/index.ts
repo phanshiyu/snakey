@@ -1,25 +1,44 @@
 import { CONTROL_DIRECTION_MAP } from "./constants";
 import { render } from "./gameObjects";
-import { initGameState, startGameLoop } from "./gameState";
+import { initGameState, SnakeGameState, startGameLoop } from "./gameState";
 
 (() => {
-  let gameState = initGameState();
+  const restartButtonElement = document.getElementById("restart");
+  const gameWorldElement = document.getElementById("game-world");
+  const scoreElement = document.getElementById("score");
 
-  let end;
-  render(gameState);
+  if (!restartButtonElement) {
+    throw new Error("Cannot find needed pre rendered elements!");
+  }
 
-  document.getElementById("restart").onclick = () => {
-    if (end) {
-      end();
+  let stopGameLoop: ReturnType<typeof startGameLoop>;
+  let gameState: SnakeGameState;
+
+  function start() {
+    if (!gameWorldElement || !scoreElement || !restartButtonElement) {
+      throw new Error("Cannot find needed pre rendered elements!");
     }
-    gameState = initGameState();
-    render(gameState);
-    end = startGameLoop(gameState, 10);
-  };
 
-  document.addEventListener("keydown", ({ key }) => {
+    if (stopGameLoop) {
+      stopGameLoop();
+    }
+
+    gameState = initGameState();
+    stopGameLoop = startGameLoop(gameState, 10);
+    render(gameState, {
+      gameWorldElement,
+      scoreElement,
+    });
+  }
+
+  function handleKeyDown({ key }: KeyboardEvent) {
     gameState.update((state) => {
       return { snakeDirection: CONTROL_DIRECTION_MAP[key] };
     });
-  });
+  }
+
+  start();
+  restartButtonElement.onclick = start;
+
+  document.addEventListener("keydown", handleKeyDown);
 })();

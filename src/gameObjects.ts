@@ -1,17 +1,11 @@
 import { GRID_SIZE, WORLD_LENGTH } from "./constants";
 import { SnakeGameState } from "./gameState";
 
-export function createSnakePart(gameState: SnakeGameState, i: number) {
+export function createSnakePart(i: number) {
   const snakePart = document.createElement("div");
   snakePart.style.width = `${GRID_SIZE}px`;
   snakePart.style.height = `${GRID_SIZE}px`;
   snakePart.className = "snake";
-
-  gameState.subscribe((state) => {
-    const currPos = state.snake[i];
-    snakePart.style.bottom = currPos.y * GRID_SIZE + "px";
-    snakePart.style.left = currPos.x * GRID_SIZE + "px";
-  });
 
   return snakePart;
 }
@@ -37,36 +31,49 @@ export function createFruit(gameState: SnakeGameState) {
   return fruit;
 }
 
-export function render(gameState: SnakeGameState) {
-  // reset
-  const gameWorld = document.getElementById("game-world");
-  gameWorld.style.height = `${WORLD_LENGTH * GRID_SIZE}px`;
-  gameWorld.style.width = `${WORLD_LENGTH * GRID_SIZE}px`;
-  gameWorld.innerHTML = "";
+export function render(
+  gameState: SnakeGameState,
+  preRenderedElements: {
+    gameWorldElement: HTMLElement;
+    scoreElement: HTMLElement;
+  }
+) {
+  const { gameWorldElement, scoreElement } = preRenderedElements;
 
-  let renderedSnakePartsCount = 0;
+  gameWorldElement.style.height = `${WORLD_LENGTH * GRID_SIZE}px`;
+  gameWorldElement.style.width = `${WORLD_LENGTH * GRID_SIZE}px`;
+  gameWorldElement.innerHTML = "";
+
+  let renderedSnakeParts: ReturnType<typeof createSnakePart>[] = [];
 
   gameState.subscribe((state) => {
     // snake has grown!
-    while (renderedSnakePartsCount < state.snake.length) {
-      const snakePart = createSnakePart(gameState, renderedSnakePartsCount);
-      gameWorld.append(snakePart);
+    for (let i = renderedSnakeParts.length; i < state.snake.length; i += 1) {
+      const snakePart = createSnakePart(i);
+      renderedSnakeParts.push(snakePart);
+      gameWorldElement.append(snakePart);
+    }
 
-      renderedSnakePartsCount += 1;
+    for (let i = 0; i < renderedSnakeParts.length; i += 1) {
+      const snakePart = renderedSnakeParts[i];
+      const currPos = state.snake[i];
+
+      snakePart.style.bottom = currPos.y * GRID_SIZE + "px";
+      snakePart.style.left = currPos.x * GRID_SIZE + "px";
     }
 
     // Update score
-    document.getElementById("score").innerText = state.score + "";
+    scoreElement.innerText = state.score + "";
 
     if (state.isGameOver) {
       if (!document.getElementById("game-over")) {
         const gameOverText = document.createElement("h1");
         gameOverText.id = "game-over";
         gameOverText.innerText = "GAME OVER";
-        gameWorld.append(gameOverText);
+        gameWorldElement.append(gameOverText);
       }
     }
   });
 
-  gameWorld.append(createFruit(gameState));
+  gameWorldElement.append(createFruit(gameState));
 }

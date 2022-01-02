@@ -1,4 +1,4 @@
-import { Direction, WORLD_LENGTH } from "./constants";
+import { CONTROL_DIRECTION_MAP, Direction, WORLD_LENGTH } from "./constants";
 import { makeGameState } from "./makeGameState";
 
 export interface Position {
@@ -11,7 +11,7 @@ function initSnake(length = 10): Position[] {
   for (let i = length - 1; i >= 0; i -= 1) {
     snake.push({
       x: i,
-      y: 0,
+      y: Math.floor(WORLD_LENGTH / 2),
     });
   }
 
@@ -31,10 +31,7 @@ const defaultGameState: Readonly<State> = {
   score: 0,
   fruit: null,
   snake: initSnake(10),
-  snakeDirection: {
-    x: 0,
-    y: 0,
-  },
+  snakeDirection: CONTROL_DIRECTION_MAP.ArrowRight,
 };
 
 export const initGameState = (snakeGameState = defaultGameState) =>
