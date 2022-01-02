@@ -45,10 +45,6 @@ export function render(gameState: SnakeGameState) {
   gameWorld.innerHTML = "";
   gameState.reset();
 
-  gameState.subscribe((state) => {
-    document.getElementById("score").innerText = state.score + "";
-  });
-
   let renderedSnakePartsCount = 0;
 
   gameState.subscribe((state) => {
@@ -59,12 +55,11 @@ export function render(gameState: SnakeGameState) {
 
       renderedSnakePartsCount += 1;
     }
-  });
 
-  gameWorld.append(createFruit(gameState));
+    // Update score
+    document.getElementById("score").innerText = state.score + "";
 
-  gameState.subscribe(({ isGameOver }) => {
-    if (isGameOver) {
+    if (state.isGameOver) {
       if (!document.getElementById("game-over")) {
         const gameOverText = document.createElement("h1");
         gameOverText.id = "game-over";
@@ -73,4 +68,6 @@ export function render(gameState: SnakeGameState) {
       }
     }
   });
+
+  gameWorld.append(createFruit(gameState));
 }
