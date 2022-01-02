@@ -27,6 +27,7 @@ export function makeGameState<T extends Record<string, unknown>>(
   }
 
   function subscribe(callback: (state: T, oldState?: T) => any) {
+    callback(gameState, undefined);
     subscribers.add(callback);
   }
 

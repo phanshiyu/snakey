@@ -43,7 +43,6 @@ export function render(gameState: SnakeGameState) {
   gameWorld.style.height = `${WORLD_LENGTH * GRID_SIZE}px`;
   gameWorld.style.width = `${WORLD_LENGTH * GRID_SIZE}px`;
   gameWorld.innerHTML = "";
-  gameState.reset();
 
   let renderedSnakePartsCount = 0;
 
@@ -60,6 +59,7 @@ export function render(gameState: SnakeGameState) {
     document.getElementById("score").innerText = state.score + "";
 
     if (state.isGameOver) {
+      console.log("called");
       if (!document.getElementById("game-over")) {
         const gameOverText = document.createElement("h1");
         gameOverText.id = "game-over";
