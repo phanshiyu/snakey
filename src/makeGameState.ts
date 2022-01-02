@@ -40,8 +40,5 @@ export function makeGameState<T extends Record<string, unknown>>(
     unsubscribe,
     get,
     update,
-    reset: () => {
-      update(initGameState);
-    },
   };
 }

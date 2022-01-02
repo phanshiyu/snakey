@@ -59,7 +59,6 @@ export function render(gameState: SnakeGameState) {
     document.getElementById("score").innerText = state.score + "";
 
     if (state.isGameOver) {
-      console.log("called");
       if (!document.getElementById("game-over")) {
         const gameOverText = document.createElement("h1");
         gameOverText.id = "game-over";

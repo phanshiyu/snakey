@@ -50,21 +50,23 @@ export function startGameLoop(gameState: SnakeGameState, fps: number) {
         if (state.snakeDirection.x === 0 && state.snakeDirection.y === 0)
           return state;
 
-        const currSnakeHead = state.snake[0];
+        const currSnakeHeadPos = state.snake[0];
         // check for collision
         for (let i = 1; i < state.snake.length; i += 1) {
           if (
-            currSnakeHead.x === state.snake[i].x &&
-            currSnakeHead.y === state.snake[i].y
-          )
+            currSnakeHeadPos.x === state.snake[i].x &&
+            currSnakeHeadPos.y === state.snake[i].y
+          ) {
+            isStop = true;
             return {
               isGameOver: true,
             };
+          }
         }
 
         let newSnakeHead = {
-          x: currSnakeHead.x + state.snakeDirection.x,
-          y: currSnakeHead.y + state.snakeDirection.y,
+          x: currSnakeHeadPos.x + state.snakeDirection.x,
+          y: currSnakeHeadPos.y + state.snakeDirection.y,
         };
 
         // check if pass boundary
