@@ -93,9 +93,12 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
     };
 
     handleTouchMove = (evt: TouchEvent) => {
+      evt.stopImmediatePropagation();
       if (!xDown || !yDown) {
         return;
       }
+
+      console.log("hello");
 
       var xUp = evt.touches[0].clientX;
       var yUp = evt.touches[0].clientY;
@@ -106,28 +109,22 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       if (Math.abs(xDiff) > Math.abs(yDiff)) {
         /*most significant*/
         if (xDiff > 0) {
-          /* right swipe */
-          changeSnakeDirection("ArrowRight");
-        } else {
-          /* left swipe */
           changeSnakeDirection("ArrowLeft");
+        } else {
+          changeSnakeDirection("ArrowRight");
         }
       } else {
         if (yDiff > 0) {
-          /* down swipe */
-          changeSnakeDirection("ArrowDown");
-        } else {
-          /* up swipe */
           changeSnakeDirection("ArrowUp");
+        } else {
+          changeSnakeDirection("ArrowDown");
         }
       }
       /* reset values */
       xDown = null;
       yDown = null;
     };
-  }
 
-  if (handleTouchStart && handleTouchMove) {
     document.addEventListener("touchstart", handleTouchStart, false);
     document.addEventListener("touchmove", handleTouchMove, false);
   }
