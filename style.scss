@@ -88,3 +88,8 @@ body {
     height: 600px;
   }
 }
+
+html,
+body {
+  overscroll-behavior-y: contain;
+}
