@@ -5,9 +5,9 @@
   },
   "name": "snake-game",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT"
 }
