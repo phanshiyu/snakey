@@ -40,6 +40,7 @@ export function render(preRenderedElements: {
 
   const gameOverText = document.createElement("h1");
   gameOverText.innerText = "GAME OVER";
+  gameOverText.className = "game-over-text";
   gameWorldElement.append(gameOverText);
 
   function updateSnakeParts(snakeState: Position[], snakeColor: string) {

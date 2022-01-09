@@ -48,4 +48,17 @@ body {
 
   min-width: 300px;
   min-height: 300px;
+
+  .game-over-text {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    z-index: 20;
+  }
 }
