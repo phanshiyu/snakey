@@ -4,6 +4,7 @@ import {
   initGameState,
   SnakeGameState,
   calculateNextGameState,
+  calculateNextSnakeDirection,
 } from "./gameState/gameState";
 import { INITIAL_GAME_STATE } from "./gameState/intialGameState";
 
@@ -52,8 +53,15 @@ let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
     }
 
     handleKeyDown = ({ key }) => {
-      gameState.update((state) => {
-        return { snakeDirection: CONTROL_DIRECTION_MAP[key] };
+      gameState.update(({ snakeDirection }) => {
+        let nextSnakeDirection = calculateNextSnakeDirection(
+          snakeDirection,
+          CONTROL_DIRECTION_MAP[key]
+        );
+
+        return {
+          snakeDirection: nextSnakeDirection,
+        };
       });
     };
 

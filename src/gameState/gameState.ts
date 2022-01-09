@@ -116,6 +116,22 @@ function calculateNextScore(
   return isNextSnakeHeadEatFruit ? currScore + 1 : currScore;
 }
 
+export function calculateNextSnakeDirection(
+  currSnakeDirection: Direction,
+  nextSnakeDirection: Direction
+) {
+  const isGoingOppositeDirection =
+    nextSnakeDirection.x * -1 === currSnakeDirection.x &&
+    nextSnakeDirection.y * -1 === currSnakeDirection.y;
+
+  // Dont allow the snake to go into its own body, comeon, thatd be stupid
+  if (isGoingOppositeDirection) {
+    nextSnakeDirection = currSnakeDirection;
+  }
+
+  return nextSnakeDirection;
+}
+
 function fruitIsInSnake(snake: Position[], fruit: Position) {
   // check for collision
   for (const snakePart of snake) {
