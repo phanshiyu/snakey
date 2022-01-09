@@ -15,11 +15,12 @@ body {
     }
   }
 
-  h1 {
-    font-size: 3em;
+  .snake-title {
+    font-size: 5em;
     font-weight: 800;
 
     margin: 0;
+    padding: 0;
   }
 
   button {
@@ -36,6 +37,17 @@ body {
 
       cursor: pointer;
     }
+  }
+
+  #score {
+    background-color: rgb(235, 235, 235);
+    padding: 8px;
+    border-radius: 8px;
+
+    margin-top: 0px;
+
+    min-width: 30px;
+    text-align: center;
   }
 }
 
