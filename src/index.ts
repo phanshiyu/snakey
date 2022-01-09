@@ -7,10 +7,13 @@ import {
   calculateNextSnakeDirection,
 } from "./gameState/gameState";
 import { INITIAL_GAME_STATE } from "./gameState/intialGameState";
+import { Direction } from "./gameState/types";
 
 // Global variables so that we can perform cleaning up
 let stopGameLoop: ReturnType<typeof startGameLoop>;
 let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
+let handleTouchStart: ((event: TouchEvent) => void) | undefined;
+let handleTouchMove: ((event: TouchEvent) => void) | undefined;
 
 (() => {
   const restartButtonElement = document.getElementById("restart");
@@ -52,7 +55,17 @@ let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
       handleKeyDown = undefined;
     }
 
-    handleKeyDown = ({ key }) => {
+    if (handleTouchStart) {
+      document.removeEventListener("touchstart", handleTouchStart);
+      handleTouchStart = undefined;
+    }
+
+    if (handleTouchMove) {
+      document.removeEventListener("touchmove", handleTouchMove);
+      handleTouchStart = undefined;
+    }
+
+    function changeSnakeDirection(key: keyof typeof CONTROL_DIRECTION_MAP) {
       gameState.update(({ snakeDirection }) => {
         let nextSnakeDirection = calculateNextSnakeDirection(
           snakeDirection,
@@ -63,9 +76,60 @@ let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
           snakeDirection: nextSnakeDirection,
         };
       });
-    };
+    }
+
+    handleKeyDown = ({ key }) =>
+      changeSnakeDirection(key as keyof typeof CONTROL_DIRECTION_MAP);
 
     document.addEventListener("keydown", handleKeyDown);
+
+    let xDown: number | null;
+    let yDown: number | null;
+
+    handleTouchStart = (evt: TouchEvent) => {
+      const firstTouch = evt.touches[0];
+      xDown = firstTouch.clientX;
+      yDown = firstTouch.clientY;
+    };
+
+    handleTouchMove = (evt: TouchEvent) => {
+      if (!xDown || !yDown) {
+        return;
+      }
+
+      var xUp = evt.touches[0].clientX;
+      var yUp = evt.touches[0].clientY;
+
+      var xDiff = xDown - xUp;
+      var yDiff = yDown - yUp;
+
+      if (Math.abs(xDiff) > Math.abs(yDiff)) {
+        /*most significant*/
+        if (xDiff > 0) {
+          /* right swipe */
+          return changeSnakeDirection("ArrowRight");
+        } else {
+          /* left swipe */
+          return changeSnakeDirection("ArrowLeft");
+        }
+      } else {
+        if (yDiff > 0) {
+          /* down swipe */
+          return changeSnakeDirection("ArrowDown");
+        } else {
+          /* up swipe */
+          return changeSnakeDirection("ArrowUp");
+        }
+      }
+      /* reset values */
+      xDown = null;
+      yDown = null;
+    };
+  }
+
+  if (handleTouchStart && handleTouchMove) {
+    document.addEventListener("touchstart", handleTouchStart, false);
+    document.addEventListener("touchmove", handleTouchMove, false);
   }
 
   // Assign start to button onclick

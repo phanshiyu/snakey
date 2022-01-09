@@ -1,9 +1,14 @@
 body {
   font-family: "Courier New", Courier, monospace;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .content {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
 
@@ -24,7 +29,7 @@ body {
   }
 
   button {
-    width: 300px;
+    width: 100%;
     font-family: "Courier New", Courier, monospace;
 
     padding-top: 8px;
