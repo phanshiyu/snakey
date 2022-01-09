@@ -1,6 +1,6 @@
 import { Direction } from "./gameState/types";
 
-export const GRID_SIZE = 20;
+export const GRID_SIZE = 100 / 15;
 export const WORLD_LENGTH = 15;
 export const FRAMES_PER_SECOND = 10;
 

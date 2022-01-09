@@ -1,12 +1,10 @@
 import { GRID_SIZE, WORLD_LENGTH } from "./constants";
-import { SnakeGameState } from "./gameState/gameState";
 import { Fruit, Position } from "./gameState/types";
-import { getRandomPositiveInt } from "./utils/randomInteger";
 
 export function createSnakePart() {
   const snakePart = document.createElement("div");
-  snakePart.style.width = `${GRID_SIZE}px`;
-  snakePart.style.height = `${GRID_SIZE}px`;
+  snakePart.style.width = `${GRID_SIZE}%`;
+  snakePart.style.height = `${GRID_SIZE}%`;
   snakePart.className = "snake";
 
   return snakePart;
@@ -14,8 +12,8 @@ export function createSnakePart() {
 
 export function createFruit() {
   const fruit = document.createElement("div");
-  fruit.style.width = `${GRID_SIZE}px`;
-  fruit.style.height = `${GRID_SIZE}px`;
+  fruit.style.width = `${GRID_SIZE}%`;
+  fruit.style.height = `${GRID_SIZE}%`;
   fruit.style.background = "red";
   fruit.style.position = "absolute";
   fruit.style.display = "none";
@@ -29,8 +27,6 @@ export function render(preRenderedElements: {
 }) {
   const { gameWorldElement, scoreElement } = preRenderedElements;
 
-  gameWorldElement.style.height = `${WORLD_LENGTH * GRID_SIZE}px`;
-  gameWorldElement.style.width = `${WORLD_LENGTH * GRID_SIZE}px`;
   gameWorldElement.innerHTML = "";
 
   let renderedSnakeParts: ReturnType<typeof createSnakePart>[] = [];
@@ -45,7 +41,6 @@ export function render(preRenderedElements: {
 
   function updateSnakeParts(snakeState: Position[], snakeColor: string) {
     // snake has grown!
-    let isSnakeHasGrown = false;
     for (let i = renderedSnakeParts.length; i < snakeState.length; i += 1) {
       const snakePart = createSnakePart();
       renderedSnakeParts.push(snakePart);
@@ -56,8 +51,8 @@ export function render(preRenderedElements: {
       const snakePart = renderedSnakeParts[i];
       const currPos = snakeState[i];
 
-      snakePart.style.bottom = currPos.y * GRID_SIZE + "px";
-      snakePart.style.left = currPos.x * GRID_SIZE + "px";
+      snakePart.style.bottom = currPos.y * GRID_SIZE + "%";
+      snakePart.style.left = currPos.x * GRID_SIZE + "%";
       snakePart.style.background = snakeColor;
     }
   }
@@ -77,8 +72,8 @@ export function render(preRenderedElements: {
   function updateFruit(fruitState: Fruit | null | undefined) {
     if (fruitState) {
       fruit.style.display = "block";
-      fruit.style.bottom = fruitState.position.y * GRID_SIZE + "px";
-      fruit.style.left = fruitState.position.x * GRID_SIZE + "px";
+      fruit.style.bottom = fruitState.position.y * GRID_SIZE + "%";
+      fruit.style.left = fruitState.position.x * GRID_SIZE + "%";
       fruit.style.backgroundColor = fruitState.color;
     } else {
       fruit.style.display = "none";

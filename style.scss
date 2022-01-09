@@ -60,8 +60,8 @@ body {
   position: relative;
   background-color: rgb(240, 240, 240);
 
-  min-width: 300px;
-  min-height: 300px;
+  width: 300px;
+  height: 300px;
 
   .game-over-text {
     text-align: center;
@@ -74,5 +74,12 @@ body {
     transform: translate(-50%, -50%);
 
     z-index: 20;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  #game-world {
+    width: 600px;
+    height: 600px;
   }
 }
