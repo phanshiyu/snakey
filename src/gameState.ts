@@ -2,27 +2,8 @@ import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "./constants";
 import { makeGameState } from "./makeGameState";
 import { Position, State } from "./types";
 
-/**
- * Given the length of the snake, creates a snake horizontally positioned
- * approximately vertically middle of the game world
- * @param length number of snake parts to create
- * @returns
- */
-function initSnake(length = 10): Position[] {
-  const snake: Position[] = [];
-
-  for (let i = length - 1; i >= 0; i -= 1) {
-    snake.push({
-      x: i,
-      y: Math.floor(WORLD_LENGTH / 2),
-    });
-  }
-
-  return snake;
-}
-
 // Our starting game state
-const initialGameState = Object.freeze({
+const INITIAL_GAME_STATE = Object.freeze({
   // Freeze it to make it read-only
   isGameOver: false,
   score: 0,
@@ -31,7 +12,7 @@ const initialGameState = Object.freeze({
   snakeDirection: CONTROL_DIRECTION_MAP.ArrowRight,
 });
 
-export const initGameState = (snakeGameState = initialGameState) =>
+export const initGameState = (snakeGameState = INITIAL_GAME_STATE) =>
   makeGameState<Readonly<State>>(snakeGameState);
 
 export function startGameLoop(gameState: SnakeGameState, fps: number) {
@@ -129,4 +110,23 @@ function snakeEatHimself(snake: Position[]) {
     }
   }
   return false;
+}
+
+/**
+ * Given the length of the snake, creates a snake horizontally positioned
+ * approximately vertically middle of the game world
+ * @param length number of snake parts to create
+ * @returns
+ */
+function initSnake(length = 10): Position[] {
+  const snake: Position[] = [];
+
+  for (let i = length - 1; i >= 0; i -= 1) {
+    snake.push({
+      x: i,
+      y: Math.floor(WORLD_LENGTH / 2),
+    });
+  }
+
+  return snake;
 }

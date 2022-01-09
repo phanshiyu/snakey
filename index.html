@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>Random snake game v0.0.0</title>
-    <script type="module" src="src/index.ts"></script>
     <link rel="stylesheet" href="style.scss" />
   </head>
   <body>
@@ -12,4 +11,6 @@
     <div id="game-world" style="position: relative; background: grey"></div>
     <button id="restart">Restart</button>
   </body>
+  <!-- We put script here so the elements above and ready before our script runs -->
+  <script type="module" src="src/index.ts"></script>
 </html>
