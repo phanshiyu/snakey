@@ -1,4 +1,4 @@
-import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "./constants";
+import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "../constants";
 import { Position } from "./types";
 
 // Our starting game state

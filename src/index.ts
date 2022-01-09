@@ -4,8 +4,8 @@ import {
   initGameState,
   SnakeGameState,
   calculateNextGameState,
-} from "./gameState";
-import { INITIAL_GAME_STATE } from "./intialGameState";
+} from "./gameState/gameState";
+import { INITIAL_GAME_STATE } from "./gameState/intialGameState";
 
 // Global variables so that we can perform cleaning up
 let stopGameLoop: ReturnType<typeof startGameLoop>;

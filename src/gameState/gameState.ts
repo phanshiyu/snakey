@@ -1,6 +1,6 @@
-import { WORLD_LENGTH } from "./constants";
-import { makeGameState } from "./utils/makeGameState";
-import { Direction, Position, State } from "./types";
+import { WORLD_LENGTH } from "../constants";
+import { makeGameState } from "../utils/makeGameState";
+import { Direction, Position, State } from "../types";
 
 export const initGameState = (snakeGameState: State) =>
   makeGameState<Readonly<State>>(snakeGameState);
@@ -36,10 +36,7 @@ export function calculateNextGameState(state: State): Partial<State> {
   // have to remove this extra part
   const nextSnake = [nextSnakeHead, ...state.snake];
   if (!isNextSnakeHeadEatFruit) nextSnake.pop();
-
-  // Increment score if snake ate de fruit
-  let nextScore = isNextSnakeHeadEatFruit ? score + 1 : score;
-
+  const nextScore = calculateNextScore(isNextSnakeHeadEatFruit, score);
   const nextFruit = calculateNextFruitPosition(isNextSnakeHeadEatFruit, fruit);
 
   return {
@@ -51,7 +48,8 @@ export function calculateNextGameState(state: State): Partial<State> {
 
 function calculateNextSnakeHeadPosition(
   currSnakeHead: Position,
-  snakeDirection: Direction
+  snakeDirection: Direction,
+  worldLength = WORLD_LENGTH
 ) {
   // Position of next snake head = snake head + one step to the current direction of the snake
   let nextSnakeHead = {
@@ -62,18 +60,18 @@ function calculateNextSnakeHeadPosition(
   // Check if the new snake head lies outside of the game world boundary, which means we have to
   // 'teleport' it to the opposite side.
   const isPassLeftBoundary = nextSnakeHead.x < 0;
-  const isPassRightBoundary = nextSnakeHead.x >= WORLD_LENGTH;
-  const isPassTopBoundary = nextSnakeHead.y >= WORLD_LENGTH;
+  const isPassRightBoundary = nextSnakeHead.x >= worldLength;
+  const isPassTopBoundary = nextSnakeHead.y >= worldLength;
   const isPassBottomBoundary = nextSnakeHead.y < 0;
 
   if (isPassLeftBoundary) {
-    nextSnakeHead.x = WORLD_LENGTH - 1;
+    nextSnakeHead.x = worldLength - 1;
   }
   if (isPassRightBoundary) {
     nextSnakeHead.x = 0;
   }
   if (isPassBottomBoundary) {
-    nextSnakeHead.y = WORLD_LENGTH - 1;
+    nextSnakeHead.y = worldLength - 1;
   }
   if (isPassTopBoundary) {
     nextSnakeHead.y = 0;
@@ -100,6 +98,13 @@ function calculateNextFruitPosition(
   }
 
   return nextFruit;
+}
+
+function calculateNextScore(
+  isNextSnakeHeadEatFruit: boolean,
+  currScore: number
+) {
+  return isNextSnakeHeadEatFruit ? currScore + 1 : currScore;
 }
 
 function snakeEatHimself(snake: Position[]) {
