@@ -5,6 +5,7 @@ import {
   SnakeGameState,
   calculateNextGameState,
 } from "./gameState";
+import { INITIAL_GAME_STATE } from "./intialGameState";
 
 // Global variables so that we can perform cleaning up
 let stopGameLoop: ReturnType<typeof startGameLoop>;
@@ -26,7 +27,7 @@ let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
       stopGameLoop();
     }
 
-    const gameState = initGameState();
+    const gameState = initGameState(INITIAL_GAME_STATE);
     stopGameLoop = startGameLoop(gameState, FRAMES_PER_SECOND);
 
     // Create initial UI and get back a bunch of methods to update various parts of our UI

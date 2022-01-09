@@ -1,20 +1,9 @@
-import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "./constants";
+import { WORLD_LENGTH } from "./constants";
 import { makeGameState } from "./utils/makeGameState";
-import { Position, State } from "./types";
+import { Direction, Position, State } from "./types";
 
-// Our starting game state
-const INITIAL_GAME_STATE = Object.freeze({
-  // Freeze it to make it read-only
-  isGameOver: false,
-  score: 0,
-  fruit: null,
-  snake: initSnake(10),
-  snakeDirection: CONTROL_DIRECTION_MAP.ArrowRight,
-});
-
-export const initGameState = (snakeGameState = INITIAL_GAME_STATE) =>
+export const initGameState = (snakeGameState: State) =>
   makeGameState<Readonly<State>>(snakeGameState);
-
 export type SnakeGameState = ReturnType<typeof initGameState>;
 
 export function calculateNextGameState(state: State): Partial<State> {
@@ -32,6 +21,38 @@ export function calculateNextGameState(state: State): Partial<State> {
 
   const currSnakeHead = snake[0];
 
+  const nextSnakeHead = calculateNextSnakeHeadPosition(
+    currSnakeHead,
+    snakeDirection
+  );
+
+  const isNextSnakeHeadEatFruit = Boolean(
+    fruit && isCollide(nextSnakeHead, fruit)
+  );
+
+  // We take the new snake head and combine it with the previous snake body parts
+  // This will mean that we optistically saying that snake has grown 1 more part.
+  // The next section we will check if the snake has ate a fruit, if it hasnt, we will
+  // have to remove this extra part
+  const nextSnake = [nextSnakeHead, ...state.snake];
+  if (!isNextSnakeHeadEatFruit) nextSnake.pop();
+
+  // Increment score if snake ate de fruit
+  let nextScore = isNextSnakeHeadEatFruit ? score + 1 : score;
+
+  const nextFruit = calculateNextFruitPosition(isNextSnakeHeadEatFruit, fruit);
+
+  return {
+    snake: nextSnake,
+    fruit: nextFruit,
+    score: nextScore,
+  };
+}
+
+function calculateNextSnakeHeadPosition(
+  currSnakeHead: Position,
+  snakeDirection: Direction
+) {
   // Position of next snake head = snake head + one step to the current direction of the snake
   let nextSnakeHead = {
     x: currSnakeHead.x + snakeDirection.x,
@@ -58,28 +79,27 @@ export function calculateNextGameState(state: State): Partial<State> {
     nextSnakeHead.y = 0;
   }
 
-  const nextSnake = [nextSnakeHead, ...state.snake];
+  return nextSnakeHead;
+}
 
-  let nextFruit = fruit;
-  let nextScore = score;
-  const isNextSnakeHeadEatFruit = fruit && isCollide(nextSnakeHead, fruit);
-
+function calculateNextFruitPosition(
+  isNextSnakeHeadEatFruit: boolean,
+  currFruit: Position | null | undefined
+) {
+  let nextFruit = currFruit;
   if (isNextSnakeHeadEatFruit) {
-    // snake head touch de fruit
     nextFruit = null;
-    nextScore += 1;
-  } else {
-    nextSnake.pop();
   }
 
-  return {
-    snake: nextSnake,
-    fruit: nextFruit ?? {
+  if (!nextFruit) {
+    // Generate a random position for de fruit
+    nextFruit = {
       x: Math.floor(Math.random() * WORLD_LENGTH),
       y: Math.floor(Math.random() * WORLD_LENGTH),
-    },
-    score: nextScore,
-  };
+    };
+  }
+
+  return nextFruit;
 }
 
 function snakeEatHimself(snake: Position[]) {
@@ -92,25 +112,6 @@ function snakeEatHimself(snake: Position[]) {
     }
   }
   return false;
-}
-
-/**
- * Given the length of the snake, creates a snake horizontally positioned
- * approximately vertically middle of the game world
- * @param length number of snake parts to create
- * @returns
- */
-function initSnake(length = 10): Position[] {
-  const snake: Position[] = [];
-
-  for (let i = length - 1; i >= 0; i -= 1) {
-    snake.push({
-      x: i,
-      y: Math.floor(WORLD_LENGTH / 2),
-    });
-  }
-
-  return snake;
 }
 
 /**
