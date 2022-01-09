@@ -1,6 +1,6 @@
 import { WORLD_LENGTH } from "../constants";
 import { makeGameState } from "../utils/makeGameState";
-import { Direction, Position, State } from "../types";
+import { Direction, Position, State } from "./types";
 
 export const initGameState = (snakeGameState: State) =>
   makeGameState<Readonly<State>>(snakeGameState);
@@ -37,7 +37,11 @@ export function calculateNextGameState(state: State): Partial<State> {
   const nextSnake = [nextSnakeHead, ...state.snake];
   if (!isNextSnakeHeadEatFruit) nextSnake.pop();
   const nextScore = calculateNextScore(isNextSnakeHeadEatFruit, score);
-  const nextFruit = calculateNextFruitPosition(isNextSnakeHeadEatFruit, fruit);
+  const nextFruit = calculateNextFruitPosition(
+    isNextSnakeHeadEatFruit,
+    fruit,
+    nextSnake
+  );
 
   return {
     snake: nextSnake,
@@ -82,7 +86,8 @@ function calculateNextSnakeHeadPosition(
 
 function calculateNextFruitPosition(
   isNextSnakeHeadEatFruit: boolean,
-  currFruit: Position | null | undefined
+  currFruit: Position | null | undefined,
+  snake: Position[]
 ) {
   let nextFruit = currFruit;
   if (isNextSnakeHeadEatFruit) {
@@ -91,10 +96,14 @@ function calculateNextFruitPosition(
 
   if (!nextFruit) {
     // Generate a random position for de fruit
-    nextFruit = {
-      x: Math.floor(Math.random() * WORLD_LENGTH),
-      y: Math.floor(Math.random() * WORLD_LENGTH),
-    };
+    // BUT the random position cannot be within the snake,
+    // if not we regenerate de fruit
+    do {
+      nextFruit = {
+        x: Math.floor(Math.random() * WORLD_LENGTH),
+        y: Math.floor(Math.random() * WORLD_LENGTH),
+      };
+    } while (fruitIsInSnake(snake, nextFruit));
   }
 
   return nextFruit;
@@ -105,6 +114,16 @@ function calculateNextScore(
   currScore: number
 ) {
   return isNextSnakeHeadEatFruit ? currScore + 1 : currScore;
+}
+
+function fruitIsInSnake(snake: Position[], fruit: Position) {
+  // check for collision
+  for (const snakePart of snake) {
+    if (isCollide(fruit, snakePart)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function snakeEatHimself(snake: Position[]) {
