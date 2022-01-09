@@ -3,11 +3,16 @@ export interface Position {
   y: number;
 }
 
+export interface Fruit {
+  position: Position;
+  color: string;
+}
 export interface State {
   isGameOver: boolean;
   score: number;
-  fruit?: Position | null;
+  fruit?: Fruit | null;
   snake: Position[];
+  snakeColor: string;
   snakeDirection: Direction;
 }
 

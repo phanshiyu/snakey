@@ -1,4 +1,5 @@
 import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "../constants";
+import { getRandomCssColor } from "../utils/randomCssColor";
 import { Position } from "./types";
 
 // Our starting game state
@@ -8,6 +9,7 @@ export const INITIAL_GAME_STATE = Object.freeze({
   score: 0,
   fruit: null,
   snake: initSnake(Math.floor(WORLD_LENGTH / 2)),
+  snakeColor: getRandomCssColor(),
   snakeDirection: CONTROL_DIRECTION_MAP.ArrowRight,
 });
 

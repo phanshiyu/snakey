@@ -1,13 +1,15 @@
 import { WORLD_LENGTH } from "../constants";
 import { makeGameState } from "../utils/makeGameState";
-import { Direction, Position, State } from "./types";
+import { getRandomCssColor } from "../utils/randomCssColor";
+import { getRandomPositiveInt } from "../utils/randomInteger";
+import { Direction, Fruit, Position, State } from "./types";
 
 export const initGameState = (snakeGameState: State) =>
   makeGameState<Readonly<State>>(snakeGameState);
 export type SnakeGameState = ReturnType<typeof initGameState>;
 
 export function calculateNextGameState(state: State): Partial<State> {
-  const { snakeDirection, snake, fruit, score } = state;
+  const { snakeDirection, snake, snakeColor, fruit, score } = state;
 
   // If snake is not even moving, the next game state should be exactly the same
   const isSnakeNotMoving = snakeDirection.x === 0 && snakeDirection.y === 0;
@@ -27,7 +29,7 @@ export function calculateNextGameState(state: State): Partial<State> {
   );
 
   const isNextSnakeHeadEatFruit = Boolean(
-    fruit && isCollide(nextSnakeHead, fruit)
+    fruit && isCollide(nextSnakeHead, fruit.position)
   );
 
   // We take the new snake head and combine it with the previous snake body parts
@@ -36,8 +38,10 @@ export function calculateNextGameState(state: State): Partial<State> {
   // have to remove this extra part
   const nextSnake = [nextSnakeHead, ...state.snake];
   if (!isNextSnakeHeadEatFruit) nextSnake.pop();
+  let nextSnakeColor =
+    fruit && isNextSnakeHeadEatFruit ? fruit.color : snakeColor;
   const nextScore = calculateNextScore(isNextSnakeHeadEatFruit, score);
-  const nextFruit = calculateNextFruitPosition(
+  const nextFruit = calculateNextFruit(
     isNextSnakeHeadEatFruit,
     fruit,
     nextSnake
@@ -45,6 +49,7 @@ export function calculateNextGameState(state: State): Partial<State> {
 
   return {
     snake: nextSnake,
+    snakeColor: nextSnakeColor,
     fruit: nextFruit,
     score: nextScore,
   };
@@ -84,9 +89,9 @@ function calculateNextSnakeHeadPosition(
   return nextSnakeHead;
 }
 
-function calculateNextFruitPosition(
+function calculateNextFruit(
   isNextSnakeHeadEatFruit: boolean,
-  currFruit: Position | null | undefined,
+  currFruit: Fruit | null | undefined,
   snake: Position[]
 ) {
   let nextFruit = currFruit;
@@ -100,10 +105,13 @@ function calculateNextFruitPosition(
     // if not we regenerate de fruit
     do {
       nextFruit = {
-        x: Math.floor(Math.random() * WORLD_LENGTH),
-        y: Math.floor(Math.random() * WORLD_LENGTH),
+        color: getRandomCssColor(),
+        position: {
+          x: getRandomPositiveInt(WORLD_LENGTH),
+          y: getRandomPositiveInt(WORLD_LENGTH),
+        },
       };
-    } while (fruitIsInSnake(snake, nextFruit));
+    } while (fruitIsInSnake(snake, nextFruit.position));
   }
 
   return nextFruit;

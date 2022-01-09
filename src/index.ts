@@ -39,8 +39,8 @@ let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
       });
 
     // Subscribe to the game state, and update our UI accordingly
-    gameState.subscribe(({ snake, fruit, score, isGameOver }) => {
-      updateSnakeParts(snake);
+    gameState.subscribe(({ snake, snakeColor, fruit, score, isGameOver }) => {
+      updateSnakeParts(snake, snakeColor);
       updateFruit(fruit);
       updateScore(score);
       updateGameOverText(isGameOver);

@@ -1,6 +1,7 @@
 import { GRID_SIZE, WORLD_LENGTH } from "./constants";
-import { SnakeGameState } from "./gameState";
-import { Position } from "./types";
+import { SnakeGameState } from "./gameState/gameState";
+import { Fruit, Position } from "./gameState/types";
+import { getRandomPositiveInt } from "./utils/randomInteger";
 
 export function createSnakePart() {
   const snakePart = document.createElement("div");
@@ -41,8 +42,9 @@ export function render(preRenderedElements: {
   gameOverText.innerText = "GAME OVER";
   gameWorldElement.append(gameOverText);
 
-  function updateSnakeParts(snakeState: Position[]) {
+  function updateSnakeParts(snakeState: Position[], snakeColor: string) {
     // snake has grown!
+    let isSnakeHasGrown = false;
     for (let i = renderedSnakeParts.length; i < snakeState.length; i += 1) {
       const snakePart = createSnakePart();
       renderedSnakeParts.push(snakePart);
@@ -55,6 +57,7 @@ export function render(preRenderedElements: {
 
       snakePart.style.bottom = currPos.y * GRID_SIZE + "px";
       snakePart.style.left = currPos.x * GRID_SIZE + "px";
+      snakePart.style.background = snakeColor;
     }
   }
 
@@ -70,11 +73,12 @@ export function render(preRenderedElements: {
     }
   }
 
-  function updateFruit(fruitState: Position | null | undefined) {
+  function updateFruit(fruitState: Fruit | null | undefined) {
     if (fruitState) {
       fruit.style.display = "block";
-      fruit.style.bottom = fruitState.y * GRID_SIZE + "px";
-      fruit.style.left = fruitState.x * GRID_SIZE + "px";
+      fruit.style.bottom = fruitState.position.y * GRID_SIZE + "px";
+      fruit.style.left = fruitState.position.x * GRID_SIZE + "px";
+      fruit.style.backgroundColor = fruitState.color;
     } else {
       fruit.style.display = "none";
     }

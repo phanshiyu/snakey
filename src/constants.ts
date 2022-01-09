@@ -1,4 +1,4 @@
-import { Direction } from "./types";
+import { Direction } from "./gameState/types";
 
 export const GRID_SIZE = 20;
 export const WORLD_LENGTH = 15;
