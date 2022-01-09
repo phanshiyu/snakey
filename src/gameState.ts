@@ -1,5 +1,5 @@
 import { CONTROL_DIRECTION_MAP, WORLD_LENGTH } from "./constants";
-import { makeGameState } from "./makeGameState";
+import { makeGameState } from "./utils/makeGameState";
 import { Position, State } from "./types";
 
 // Our starting game state
@@ -15,97 +15,79 @@ const INITIAL_GAME_STATE = Object.freeze({
 export const initGameState = (snakeGameState = INITIAL_GAME_STATE) =>
   makeGameState<Readonly<State>>(snakeGameState);
 
-export function startGameLoop(gameState: SnakeGameState, fps: number) {
-  let isEndGameLoop = false;
+export type SnakeGameState = ReturnType<typeof initGameState>;
 
-  function loop() {
-    setTimeout(() => {
-      gameState.update((state) => {
-        const { snakeDirection, snake, fruit, score } = state;
+export function calculateNextGameState(state: State): Partial<State> {
+  const { snakeDirection, snake, fruit, score } = state;
 
-        // If snake is not even moving, the next game state should be exactly the same
-        const isSnakeNotMoving =
-          snakeDirection.x === 0 && snakeDirection.y === 0;
-        if (isSnakeNotMoving) return state;
+  // If snake is not even moving, the next game state should be exactly the same
+  const isSnakeNotMoving = snakeDirection.x === 0 && snakeDirection.y === 0;
+  if (isSnakeNotMoving) return state;
 
-        if (snakeEatHimself(snake)) {
-          isEndGameLoop = true;
-          return {
-            isGameOver: true,
-          };
-        }
-
-        const currSnakeHead = snake[0];
-
-        // Position of next snake head = snake head + one step to the current direction of the snake
-        let nextSnakeHead = {
-          x: currSnakeHead.x + snakeDirection.x,
-          y: currSnakeHead.y + snakeDirection.y,
-        };
-
-        // Check if the new snake head lies outside of the game world boundary, which means we have to
-        // 'teleport' it to the opposite side.
-        const isPassLeftBoundary = nextSnakeHead.x < 0;
-        const isPassRightBoundary = nextSnakeHead.x >= WORLD_LENGTH;
-        const isPassTopBoundary = nextSnakeHead.y >= WORLD_LENGTH;
-        const isPassBottomBoundary = nextSnakeHead.y < 0;
-
-        if (isPassLeftBoundary) {
-          nextSnakeHead.x = WORLD_LENGTH - 1;
-        }
-        if (isPassRightBoundary) {
-          nextSnakeHead.x = 0;
-        }
-        if (isPassBottomBoundary) {
-          nextSnakeHead.y = WORLD_LENGTH - 1;
-        }
-        if (isPassTopBoundary) {
-          nextSnakeHead.y = 0;
-        }
-
-        const nextSnake = [nextSnakeHead, ...state.snake];
-
-        let nextFruit = fruit;
-        let nextScore = score;
-        const isNextSnakeHeadEatFruit =
-          fruit && fruit.x === nextSnakeHead.x && fruit.y === nextSnakeHead.y;
-
-        if (isNextSnakeHeadEatFruit) {
-          // snake head touch de fruit
-          nextFruit = null;
-          nextScore += 1;
-        } else {
-          nextSnake.pop();
-        }
-
-        return {
-          snake: nextSnake,
-          fruit: nextFruit ?? {
-            x: Math.floor(Math.random() * WORLD_LENGTH),
-            y: Math.floor(Math.random() * WORLD_LENGTH),
-          },
-          score: nextScore,
-        };
-      });
-
-      if (!isEndGameLoop) requestAnimationFrame(loop);
-    }, 1000 / fps);
+  if (snakeEatHimself(snake)) {
+    return {
+      isGameOver: true,
+    };
   }
 
-  requestAnimationFrame(loop);
+  const currSnakeHead = snake[0];
 
-  return () => {
-    isEndGameLoop = true;
+  // Position of next snake head = snake head + one step to the current direction of the snake
+  let nextSnakeHead = {
+    x: currSnakeHead.x + snakeDirection.x,
+    y: currSnakeHead.y + snakeDirection.y,
+  };
+
+  // Check if the new snake head lies outside of the game world boundary, which means we have to
+  // 'teleport' it to the opposite side.
+  const isPassLeftBoundary = nextSnakeHead.x < 0;
+  const isPassRightBoundary = nextSnakeHead.x >= WORLD_LENGTH;
+  const isPassTopBoundary = nextSnakeHead.y >= WORLD_LENGTH;
+  const isPassBottomBoundary = nextSnakeHead.y < 0;
+
+  if (isPassLeftBoundary) {
+    nextSnakeHead.x = WORLD_LENGTH - 1;
+  }
+  if (isPassRightBoundary) {
+    nextSnakeHead.x = 0;
+  }
+  if (isPassBottomBoundary) {
+    nextSnakeHead.y = WORLD_LENGTH - 1;
+  }
+  if (isPassTopBoundary) {
+    nextSnakeHead.y = 0;
+  }
+
+  const nextSnake = [nextSnakeHead, ...state.snake];
+
+  let nextFruit = fruit;
+  let nextScore = score;
+  const isNextSnakeHeadEatFruit = fruit && isCollide(nextSnakeHead, fruit);
+
+  if (isNextSnakeHeadEatFruit) {
+    // snake head touch de fruit
+    nextFruit = null;
+    nextScore += 1;
+  } else {
+    nextSnake.pop();
+  }
+
+  return {
+    snake: nextSnake,
+    fruit: nextFruit ?? {
+      x: Math.floor(Math.random() * WORLD_LENGTH),
+      y: Math.floor(Math.random() * WORLD_LENGTH),
+    },
+    score: nextScore,
   };
 }
-
-export type SnakeGameState = ReturnType<typeof initGameState>;
 
 function snakeEatHimself(snake: Position[]) {
   const snakeHead = snake[0];
   // check for collision
   for (let i = 1; i < snake.length; i += 1) {
-    if (snakeHead.x === snake[i].x && snakeHead.y === snake[i].y) {
+    const snakePart = snake[i];
+    if (isCollide(snakeHead, snakePart)) {
       return true;
     }
   }
@@ -129,4 +111,14 @@ function initSnake(length = 10): Position[] {
   }
 
   return snake;
+}
+
+/**
+ * Checks if two positions are the same
+ * @param objectOne
+ * @param objectTwo
+ * @returns
+ */
+function isCollide(objectOne: Position, objectTwo: Position): Boolean {
+  return objectOne.x === objectTwo.x && objectOne.y === objectTwo.y;
 }

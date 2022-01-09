@@ -1,44 +1,101 @@
-import { CONTROL_DIRECTION_MAP } from "./constants";
-import { render } from "./gameObjects";
-import { initGameState, SnakeGameState, startGameLoop } from "./gameState";
+import { CONTROL_DIRECTION_MAP, FRAMES_PER_SECOND } from "./constants";
+import { render } from "./renderDomElements";
+import {
+  initGameState,
+  SnakeGameState,
+  calculateNextGameState,
+} from "./gameState";
+
+// Global variables so that we can perform cleaning up
+let stopGameLoop: ReturnType<typeof startGameLoop>;
+let handleKeyDown: ((event: KeyboardEvent) => void) | undefined;
 
 (() => {
   const restartButtonElement = document.getElementById("restart");
   const gameWorldElement = document.getElementById("game-world");
   const scoreElement = document.getElementById("score");
 
-  if (!restartButtonElement) {
-    throw new Error("Cannot find needed pre rendered elements!");
-  }
-
-  let stopGameLoop: ReturnType<typeof startGameLoop>;
-  let gameState: SnakeGameState;
-
   function start() {
+    // Check if required HTML elements are rendered
     if (!gameWorldElement || !scoreElement || !restartButtonElement) {
       throw new Error("Cannot find needed pre rendered elements!");
     }
 
+    // If there currently an existing gamr loop running, we stop it first
     if (stopGameLoop) {
       stopGameLoop();
     }
 
-    gameState = initGameState();
-    stopGameLoop = startGameLoop(gameState, 10);
-    render(gameState, {
-      gameWorldElement,
-      scoreElement,
+    const gameState = initGameState();
+    stopGameLoop = startGameLoop(gameState, FRAMES_PER_SECOND);
+
+    // Create initial UI and get back a bunch of methods to update various parts of our UI
+    const { updateSnakeParts, updateFruit, updateScore, updateGameOverText } =
+      render({
+        gameWorldElement,
+        scoreElement,
+      });
+
+    // Subscribe to the game state, and update our UI accordingly
+    gameState.subscribe(({ snake, fruit, score, isGameOver }) => {
+      updateSnakeParts(snake);
+      updateFruit(fruit);
+      updateScore(score);
+      updateGameOverText(isGameOver);
     });
+
+    // Clean up event listener
+    if (handleKeyDown) {
+      document.removeEventListener("keydown", handleKeyDown);
+      handleKeyDown = undefined;
+    }
+
+    handleKeyDown = ({ key }) => {
+      gameState.update((state) => {
+        return { snakeDirection: CONTROL_DIRECTION_MAP[key] };
+      });
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
   }
 
-  function handleKeyDown({ key }: KeyboardEvent) {
-    gameState.update((state) => {
-      return { snakeDirection: CONTROL_DIRECTION_MAP[key] };
-    });
+  // Assign start to button onclick
+  if (!restartButtonElement) {
+    throw new Error("Cannot find needed pre rendered elements!");
   }
-
-  start();
   restartButtonElement.onclick = start;
-
-  document.addEventListener("keydown", handleKeyDown);
 })();
+
+/**
+ * Starts the game loop via requestAnimationFrame
+ * @param gameState
+ * @param fps
+ * @returns A clean up function to stop the game loop
+ */
+function startGameLoop(gameState: SnakeGameState, fps: number) {
+  let isStopGameLoop = false;
+
+  function loop() {
+    setTimeout(() => {
+      gameState.update((state) => {
+        const nextState = calculateNextGameState(state);
+
+        if (nextState.isGameOver) stopGameLoop();
+
+        return nextState;
+      });
+
+      // Continue processing the next game state if isStopGameLoop is false
+      if (!isStopGameLoop) requestAnimationFrame(loop);
+    }, 1000 / fps);
+  }
+
+  requestAnimationFrame(loop);
+
+  // Sets the flag to stop calling requestAnimationFrame
+  function stopGameLoop() {
+    isStopGameLoop = true;
+  }
+
+  return stopGameLoop;
+}
