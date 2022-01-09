@@ -107,18 +107,18 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
         /*most significant*/
         if (xDiff > 0) {
           /* right swipe */
-          return changeSnakeDirection("ArrowRight");
+          changeSnakeDirection("ArrowRight");
         } else {
           /* left swipe */
-          return changeSnakeDirection("ArrowLeft");
+          changeSnakeDirection("ArrowLeft");
         }
       } else {
         if (yDiff > 0) {
           /* down swipe */
-          return changeSnakeDirection("ArrowDown");
+          changeSnakeDirection("ArrowDown");
         } else {
           /* up swipe */
-          return changeSnakeDirection("ArrowUp");
+          changeSnakeDirection("ArrowUp");
         }
       }
       /* reset values */
