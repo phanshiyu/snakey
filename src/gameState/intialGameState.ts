@@ -7,7 +7,7 @@ export const INITIAL_GAME_STATE = Object.freeze({
   isGameOver: false,
   score: 0,
   fruit: null,
-  snake: initSnake(10),
+  snake: initSnake(Math.floor(WORLD_LENGTH / 2)),
   snakeDirection: CONTROL_DIRECTION_MAP.ArrowRight,
 });
 
