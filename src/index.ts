@@ -110,29 +110,32 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       const xDiff = xDown - xUp;
       const yDiff = yDown - yUp;
 
-      if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        /*most significant*/
-        if (xDiff > 0) {
-          changeSnakeDirection("ArrowLeft");
-        } else {
-          changeSnakeDirection("ArrowRight");
-        }
-      } else {
-        if (yDiff > 0) {
-          changeSnakeDirection("ArrowUp");
-        } else {
-          changeSnakeDirection("ArrowDown");
-        }
-      }
-      /* reset values */
+      const THRESHOLD = 100;
+      const isPastSensitivityThreshold =
+        Math.abs(yDiff) > THRESHOLD || Math.abs(xDiff) > THRESHOLD;
 
-      if (!timeout) {
+      if (!timeout && isPastSensitivityThreshold) {
+        if (Math.abs(xDiff) > Math.abs(yDiff)) {
+          /*most significant*/
+          if (xDiff > 0) {
+            changeSnakeDirection("ArrowLeft");
+          } else {
+            changeSnakeDirection("ArrowRight");
+          }
+        } else {
+          if (yDiff > 0) {
+            changeSnakeDirection("ArrowUp");
+          } else {
+            changeSnakeDirection("ArrowDown");
+          }
+        }
+        /* reset values */
         xDown = xUp;
         yDown = yUp;
 
         timeout = setTimeout(() => {
           timeout = null;
-        }, 500);
+        }, 200);
       }
     };
 
