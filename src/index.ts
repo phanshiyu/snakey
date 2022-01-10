@@ -95,6 +95,8 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       yDown = firstTouch.clientY;
     };
 
+    let timeout: NodeJS.Timeout | null = null;
+
     handleTouchMove = (evt: TouchEvent) => {
       evt.stopImmediatePropagation();
       if (!xDown || !yDown) {
@@ -122,8 +124,15 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
         }
       }
       /* reset values */
-      xDown = xUp;
-      yDown = yUp;
+
+      if (!timeout) {
+        xDown = xUp;
+        yDown = yUp;
+
+        timeout = setTimeout(() => {
+          timeout = null;
+        }, 500);
+      }
     };
 
     document.addEventListener("touchstart", handleTouchStart, false);
