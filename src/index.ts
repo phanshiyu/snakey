@@ -110,7 +110,7 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       const xDiff = xDown - xUp;
       const yDiff = yDown - yUp;
 
-      const THRESHOLD = 100;
+      const THRESHOLD = 50;
       const isPastSensitivityThreshold =
         Math.abs(yDiff) > THRESHOLD || Math.abs(xDiff) > THRESHOLD;
 
