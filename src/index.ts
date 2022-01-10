@@ -16,13 +16,13 @@ let handleTouchStart: ((event: TouchEvent) => void) | undefined;
 let handleTouchMove: ((event: TouchEvent) => void) | undefined;
 
 (() => {
-  const restartButtonElement = document.getElementById("restart");
+  const startButtonElement = document.getElementById("restart");
   const gameWorldElement = document.getElementById("game-world");
   const scoreElement = document.getElementById("score");
 
   function start() {
     // Check if required HTML elements are rendered
-    if (!gameWorldElement || !scoreElement || !restartButtonElement) {
+    if (!gameWorldElement || !scoreElement || !startButtonElement) {
       throw new Error("Cannot find needed pre rendered elements!");
     }
 
@@ -39,6 +39,7 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       render({
         gameWorldElement,
         scoreElement,
+        startButtonElement,
       });
 
     // Subscribe to the game state, and update our UI accordingly
@@ -140,10 +141,10 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
   }
 
   // Assign start to button onclick
-  if (!restartButtonElement) {
+  if (!startButtonElement) {
     throw new Error("Cannot find needed pre rendered elements!");
   }
-  restartButtonElement.onclick = start;
+  startButtonElement.onclick = start;
 })();
 
 /**

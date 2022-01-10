@@ -24,8 +24,10 @@ export function createFruit() {
 export function render(preRenderedElements: {
   gameWorldElement: HTMLElement;
   scoreElement: HTMLElement;
+  startButtonElement: HTMLElement;
 }) {
-  const { gameWorldElement, scoreElement } = preRenderedElements;
+  const { gameWorldElement, scoreElement, startButtonElement } =
+    preRenderedElements;
 
   gameWorldElement.innerHTML = "";
 
@@ -65,9 +67,14 @@ export function render(preRenderedElements: {
     if (isGameOver) {
       gameWorldElement.classList.add("game-over");
       gameOverText.style.display = "block";
+
+      setTimeout(() => {
+        startButtonElement.style.display = "block";
+      }, 2000);
     } else {
       gameWorldElement.classList.remove("game-over");
       gameOverText.style.display = "none";
+      startButtonElement.style.display = "none";
     }
   }
 
