@@ -38,6 +38,10 @@ body {
     min-width: 30px;
     text-align: center;
   }
+
+  p {
+    max-width: 300px;
+  }
 }
 
 .game-container {
@@ -98,6 +102,12 @@ body {
   #game-world {
     width: 600px;
     height: 600px;
+  }
+
+  .content {
+    p {
+      max-width: 600px;
+    }
   }
 }
 
