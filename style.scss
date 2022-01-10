@@ -131,6 +131,10 @@ body {
 html,
 body {
   overscroll-behavior-y: contain;
+
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
 /* The animation code */
