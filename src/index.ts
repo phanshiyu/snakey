@@ -79,7 +79,12 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       });
     }
 
-    handleKeyDown = ({ key }) => {
+    handleKeyDown = (event) => {
+      const { key } = event;
+      console.log("hello");
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
       if (key in CONTROL_DIRECTION_MAP) {
         changeSnakeDirection(key as keyof typeof CONTROL_DIRECTION_MAP);
       }
@@ -98,14 +103,14 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
 
     let timeout: NodeJS.Timeout | null = null;
 
-    handleTouchMove = (evt: TouchEvent) => {
-      evt.stopImmediatePropagation();
+    handleTouchMove = (event: TouchEvent) => {
+      event.preventDefault();
       if (!xDown || !yDown) {
         return;
       }
 
-      const xUp = evt.touches[0].clientX;
-      const yUp = evt.touches[0].clientY;
+      const xUp = event.touches[0].clientX;
+      const yUp = event.touches[0].clientY;
 
       const xDiff = xDown - xUp;
       const yDiff = yDown - yUp;
