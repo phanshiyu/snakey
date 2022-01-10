@@ -63,8 +63,10 @@ export function render(preRenderedElements: {
 
   function updateGameOverText(isGameOver: boolean) {
     if (isGameOver) {
+      gameWorldElement.classList.add("game-over");
       gameOverText.style.display = "block";
     } else {
+      gameWorldElement.classList.remove("game-over");
       gameOverText.style.display = "none";
     }
   }

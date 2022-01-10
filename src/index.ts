@@ -32,7 +32,7 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
     }
 
     const gameState = initGameState(INITIAL_GAME_STATE);
-    stopGameLoop = startGameLoop(gameState, FRAMES_PER_SECOND);
+    stopGameLoop = startGameLoop(gameState, FRAMES_PER_SECOND + 5);
 
     // Create initial UI and get back a bunch of methods to update various parts of our UI
     const { updateSnakeParts, updateFruit, updateScore, updateGameOverText } =
@@ -78,8 +78,11 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
       });
     }
 
-    handleKeyDown = ({ key }) =>
-      changeSnakeDirection(key as keyof typeof CONTROL_DIRECTION_MAP);
+    handleKeyDown = ({ key }) => {
+      if (key in CONTROL_DIRECTION_MAP) {
+        changeSnakeDirection(key as keyof typeof CONTROL_DIRECTION_MAP);
+      }
+    };
 
     document.addEventListener("keydown", handleKeyDown);
 
@@ -98,13 +101,11 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
         return;
       }
 
-      console.log("hello");
+      const xUp = evt.touches[0].clientX;
+      const yUp = evt.touches[0].clientY;
 
-      var xUp = evt.touches[0].clientX;
-      var yUp = evt.touches[0].clientY;
-
-      var xDiff = xDown - xUp;
-      var yDiff = yDown - yUp;
+      const xDiff = xDown - xUp;
+      const yDiff = yDown - yUp;
 
       if (Math.abs(xDiff) > Math.abs(yDiff)) {
         /*most significant*/
@@ -121,8 +122,8 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
         }
       }
       /* reset values */
-      xDown = null;
-      yDown = null;
+      xDown = xUp;
+      yDown = yUp;
     };
 
     document.addEventListener("touchstart", handleTouchStart, false);

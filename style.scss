@@ -80,6 +80,10 @@ body {
 
     z-index: 20;
   }
+
+  &.game-over {
+    animation: animate-color 0.5s steps(2) alternate infinite;
+  }
 }
 
 @media only screen and (min-width: 768px) {
@@ -92,4 +96,14 @@ body {
 html,
 body {
   overscroll-behavior-y: contain;
+}
+
+/* The animation code */
+@keyframes animate-color {
+  from {
+    background-color: red;
+  }
+  to {
+    background-color: yellow;
+  }
 }
