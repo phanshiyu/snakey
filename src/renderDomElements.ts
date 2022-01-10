@@ -41,6 +41,7 @@ export function render(preRenderedElements: {
   gameOverText.className = "game-over-text";
   gameWorldElement.append(gameOverText);
 
+  let previousSnakeColor = "";
   function updateSnakeParts(snakeState: Position[], snakeColor: string) {
     // snake has grown!
     for (let i = renderedSnakeParts.length; i < snakeState.length; i += 1) {
@@ -55,7 +56,17 @@ export function render(preRenderedElements: {
 
       snakePart.style.bottom = currPos.y * GRID_SIZE + "%";
       snakePart.style.left = currPos.x * GRID_SIZE + "%";
-      snakePart.style.background = snakeColor;
+
+      if (!snakePart.style.background)
+        snakePart.style.background = previousSnakeColor;
+
+      setTimeout(() => {
+        snakePart.style.background = snakeColor;
+      }, i * 25);
+    }
+
+    if (previousSnakeColor !== snakeColor) {
+      previousSnakeColor = snakeColor;
     }
   }
 
