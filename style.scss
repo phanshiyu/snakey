@@ -12,6 +12,10 @@ body {
   flex-direction: column;
   align-items: center;
 
+  .version-text {
+    margin: 4px;
+  }
+
   > * {
     margin-bottom: 16px;
 

@@ -25,6 +25,11 @@ let handleTouchMove: ((event: TouchEvent) => void) | undefined;
     if (!gameWorldElement || !scoreElement || !startButtonElement) {
       throw new Error("Cannot find needed pre rendered elements!");
     }
+    gameWorldElement.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    });
 
     // If there currently an existing gamr loop running, we stop it first
     if (stopGameLoop) {
